@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>BaseStorage</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="BaseStorage.html">
+                  BaseStorage.coffee
+                </a>
+              
+                
+                <a class="source" href="LocalStorage.html">
+                  LocalStorage.coffee
+                </a>
+              
+                
+                <a class="source" href="MemoryStorage.html">
+                  MemoryStorage.coffee
+                </a>
+              
+                
+                <a class="source" href="index.html">
+                  index.coffee
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-title">now</span> = <span class="hljs-params">()</span>-&gt;</span>
+  (<span class="hljs-keyword">new</span> Date()).getTime()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h1 id="basestorage">BaseStorage</h1>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Parent class extended by MemoryStorage and LocalStorage
+that provides expiry and namespacing</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BaseStorage</span></span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h2 id="constructor">constructor</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p><em>ttl</em>       : global ttl for items this storage
+<em>namespace</em> : starting namespace for this storage</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  constructor : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    <span class="hljs-property">@ttl</span> = args.ttl
+
+    <span class="hljs-keyword">if</span> (<span class="hljs-string">'namespace'</span> <span class="hljs-keyword">of</span> args)
+      <span class="hljs-property">@namespace</span> = args.namespace</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h2 id="setnamespace">setNamespace</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p><strong>namespace</strong> : new namespace</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  setNamespace : <span class="hljs-function"><span class="hljs-params">(namespace)</span>-&gt;</span>
+    <span class="hljs-property">@namespace</span> = namespace</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <h2 id="buildkey">buildKey</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p><strong>key</strong>     : suffix key to build off
+<em>namespace</em> : key namespace</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  buildKey : <span class="hljs-function"><span class="hljs-params">(args)</span>-&gt;</span>
+    key = args.key
+
+    namespace = <span class="hljs-property">@namespace</span> || <span class="hljs-string">''</span>
+    <span class="hljs-keyword">if</span> (<span class="hljs-string">'namespace'</span> <span class="hljs-keyword">of</span> args)
+      namespace = args.namespace
+
+    <span class="hljs-keyword">if</span> (namespace.length &gt; <span class="hljs-number">0</span>)
+      namespace = namespace + <span class="hljs-string">':'</span>
+
+    <span class="hljs-string">"<span class="hljs-subst">#{namespace}</span><span class="hljs-subst">#{key}</span>"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <h2 id="_expires">_expires</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p><em>ttl</em> : override global ttl</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  _expires : <span class="hljs-function"><span class="hljs-params">(ttl)</span>-&gt;</span>
+    <span class="hljs-keyword">unless</span> (ttl &gt; <span class="hljs-number">0</span>)
+      ttl = <span class="hljs-property">@ttl</span>
+
+    <span class="hljs-keyword">if</span> (ttl &gt; <span class="hljs-number">0</span>)
+      now() + ttl
+    <span class="hljs-keyword">else</span>
+      <span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h2 id="wrap">wrap</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p><strong>data</strong> : data to wrap
+<em>ttl</em>    : override global ttl</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  wrap : <span class="hljs-function"><span class="hljs-params">(args)</span>-&gt;</span>
+    {data, ttl} = args
+
+    {
+      data    : data
+      expires : <span class="hljs-property">@_expires</span>(ttl)
+    }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h2 id="unwrap">unwrap</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p><strong>wrapped</strong> : wrapped data
+<strong>key</strong>     : key</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  unwrap : <span class="hljs-function"><span class="hljs-params">(args)</span>-&gt;</span>
+    {wrapped, key} = args
+    expires = wrapped.expires
+    <span class="hljs-keyword">if</span> (expires <span class="hljs-keyword">and</span> (expires &lt;= now()))
+      <span class="hljs-property">@remove</span>(args)
+      <span class="hljs-literal">null</span>
+    <span class="hljs-keyword">else</span>
+      wrapped.data
+
+<span class="hljs-built_in">module</span>.exports = BaseStorage</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
