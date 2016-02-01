@@ -20,8 +20,18 @@
             <div id="jump_page">
               
                 
+                <a class="source" href="AsyncStorage.html">
+                  AsyncStorage.coffee
+                </a>
+              
+                
                 <a class="source" href="BaseStorage.html">
                   BaseStorage.coffee
+                </a>
+              
+                
+                <a class="source" href="LocalForage.html">
+                  LocalForage.coffee
                 </a>
               
                 
@@ -60,9 +70,10 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h2 id="local-dependencies">Local dependencies</h2>
-
+              
             </div>
+            
+            <div class="content"><div class='highlight'><pre>cbop = <span class="hljs-built_in">require</span>(<span class="hljs-string">'cbop'</span>);</pre></div></div>
             
         </li>
         
@@ -73,11 +84,9 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p><a href="./BaseStorage.html">BaseStorage</a></p>
+              <h2 id="local-dependencies">Local dependencies</h2>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>BaseStorage = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./BaseStorage'</span>)</pre></div></div>
             
         </li>
         
@@ -88,9 +97,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <h1 id="localstorage">LocalStorage</h1>
+              <p><a href="./BaseStorage.html">BaseStorage</a></p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>BaseStorage = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./BaseStorage'</span>)</pre></div></div>
             
         </li>
         
@@ -101,12 +112,9 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              
+              <h1 id="localstorage">LocalStorage</h1>
+
             </div>
-            
-            <div class="content"><div class='highlight'><pre><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">LocalStorage</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">BaseStorage</span></span>
-  constructor : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
-    <span class="hljs-property">@localStorage</span> = args.localStorage || localStorage</pre></div></div>
             
         </li>
         
@@ -117,9 +125,10 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <h2 id="set">set</h2>
-
+              
             </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">LocalStorage</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">BaseStorage</span></span></pre></div></div>
             
         </li>
         
@@ -130,19 +139,9 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
-              <p>Set data for key</p>
-<p><strong>key</strong> : key to set
-<strong>data</strong> : data to set</p>
+              <h2 id="set">set</h2>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>  set : <span class="hljs-function"><span class="hljs-params">(args)</span>-&gt;</span>
-    data = args.data
-    key  = <span class="hljs-property">@buildKey</span>(args)
-
-    wrapped = <span class="hljs-property">@wrap</span>(args)
-    json = JSON.stringify(wrapped)
-    <span class="hljs-property">@localStorage</span>.setItem(key, json)</pre></div></div>
             
         </li>
         
@@ -153,9 +152,27 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <h2 id="get">get</h2>
+              <p>Set data for key</p>
+<p><strong>key</strong> : key to set
+<strong>data</strong> : data to set
+<strong>callback</strong> : optional callback</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>  set : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    error = <span class="hljs-keyword">try</span>
+      key = <span class="hljs-property">@buildKey</span>(args)
+      wrapped = <span class="hljs-property">@wrap</span>(args)
+      json = JSON.stringify(wrapped)
+      <span class="hljs-property">@backend</span>.setItem(key, json)
+      <span class="hljs-literal">null</span>
+    <span class="hljs-keyword">catch</span> err
+      err
+
+    cbop(
+      error    : error
+      callback : args.callback
+    )</pre></div></div>
             
         </li>
         
@@ -166,22 +183,9 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <p>Get data for key</p>
-<p><strong>key</strong> : key to get</p>
+              <h2 id="get">get</h2>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>  get : <span class="hljs-function"><span class="hljs-params">(args)</span>-&gt;</span>
-    key  = <span class="hljs-property">@buildKey</span>(args)
-    json = <span class="hljs-property">@localStorage</span>.getItem(key)
-
-    <span class="hljs-keyword">if</span> json
-      <span class="hljs-property">@unwrap</span>(
-        wrapped : JSON.parse(json)
-        key     : key
-      )
-    <span class="hljs-keyword">else</span>
-      <span class="hljs-literal">null</span></pre></div></div>
             
         </li>
         
@@ -192,9 +196,34 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <h2 id="remove">remove</h2>
+              <p>Get data for key</p>
+<p><strong>key</strong>: key to get
+<strong>callback</strong>: optional callback</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>  get : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    [error, value] = <span class="hljs-keyword">try</span>
+      key  = <span class="hljs-property">@buildKey</span>(args)
+      json = <span class="hljs-property">@backend</span>.getItem(key)
+
+      value = <span class="hljs-keyword">if</span> json
+        <span class="hljs-property">@unwrap</span>(
+          data : JSON.parse(json)
+          key  : key
+        )
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-literal">null</span>
+
+      [<span class="hljs-literal">null</span>, value]
+    <span class="hljs-keyword">catch</span> err
+      [err, <span class="hljs-literal">null</span>]
+
+    cbop(
+      error    : error
+      value    : value
+      callback : args.callback
+    )</pre></div></div>
             
         </li>
         
@@ -205,14 +234,9 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
-              <p>Remove data for key</p>
-<p><strong>key</strong> : key to remove</p>
+              <h2 id="remove">remove</h2>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>  remove : <span class="hljs-function"><span class="hljs-params">(args)</span>-&gt;</span>
-    key = <span class="hljs-property">@buildKey</span>(args)
-    <span class="hljs-property">@localStorage</span>.removeItem(key)</pre></div></div>
             
         </li>
         
@@ -223,9 +247,23 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
-              <h2 id="clear">clear</h2>
+              <p>Remove data for key</p>
+<p><strong>key</strong> : key to remove</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>  remove : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    error = <span class="hljs-keyword">try</span>
+      key = <span class="hljs-property">@buildKey</span>(args)
+      <span class="hljs-property">@backend</span>.removeItem(key)
+      <span class="hljs-literal">null</span>
+    <span class="hljs-keyword">catch</span> err
+      err
+
+    cbop(
+      error    : error
+      callback : args.callback
+    )</pre></div></div>
             
         </li>
         
@@ -236,13 +274,9 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
-              <p>clear all the data</p>
-<p><strong>key</strong> : key to remove</p>
+              <h2 id="clear">clear</h2>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>  clear : <span class="hljs-function"><span class="hljs-params">()</span>-&gt;</span>
-    <span class="hljs-property">@localStorage</span>.clear()</pre></div></div>
             
         </li>
         
@@ -253,9 +287,22 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
-              <h2 id="length">length</h2>
+              <p>clear all the data</p>
+<p><strong>callback</strong>: optional callback</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>  clear : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    error = <span class="hljs-keyword">try</span>
+      <span class="hljs-property">@backend</span>.clear()
+      <span class="hljs-literal">null</span>
+    <span class="hljs-keyword">catch</span> err
+      err
+
+    cbop(
+      error    : error
+      callback : args.callback
+    )</pre></div></div>
             
         </li>
         
@@ -266,12 +313,76 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
-              <p>count of the number of entries</p>
+              <h2 id="length">length</h2>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  length : <span class="hljs-function"><span class="hljs-params">()</span>-&gt;</span>
-    <span class="hljs-property">@localStorage</span>.length
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>count of the number of entries</p>
+<p><strong>callback</strong>: optional callback</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  length : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    [error, value] = <span class="hljs-keyword">try</span>
+      [<span class="hljs-literal">null</span>, <span class="hljs-property">@backend</span>.length]
+    <span class="hljs-keyword">catch</span> err
+      [err, <span class="hljs-literal">null</span>]
+
+    cbop(
+      error    : error
+      value    : value
+      callback : args.callback
+    )</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <h2 id="keys">keys</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p>return all the keys</p>
+<p><strong>callback</strong>: optional callback</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  keys : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    [error, keys] = <span class="hljs-keyword">try</span>
+      keys = (<span class="hljs-property">@backend</span>.key(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> [<span class="hljs-number">0</span> ... <span class="hljs-property">@backend</span>.length])
+      [<span class="hljs-literal">null</span>, keys]
+    <span class="hljs-keyword">catch</span> err
+      [err, <span class="hljs-literal">null</span>]
+
+    cbop(
+      error    : error
+      value    : keys
+      callback : args.callback
+    )
+
 
 <span class="hljs-built_in">module</span>.exports = LocalStorage</pre></div></div>
             

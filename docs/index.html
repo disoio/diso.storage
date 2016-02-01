@@ -20,8 +20,18 @@
             <div id="jump_page">
               
                 
+                <a class="source" href="AsyncStorage.html">
+                  AsyncStorage.coffee
+                </a>
+              
+                
                 <a class="source" href="BaseStorage.html">
                   BaseStorage.coffee
+                </a>
+              
+                
+                <a class="source" href="LocalForage.html">
+                  LocalForage.coffee
                 </a>
               
                 
@@ -74,16 +84,58 @@
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
               <p><a href="./MemoryStorage.html">MemoryStorage</a>
-<a href="./LocalStorage.html">LocalStorage</a></p>
+<a href="./LocalStorage.html">LocalStorage</a>
+<a href="./LocalForage.html">LocalForage</a>
+<a href="./AsyncStorage.html">AsyncStorage</a></p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>MemoryStorage = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./MemoryStorage'</span>)
 LocalStorage  = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./LocalStorage'</span>)
+LocalForage   = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./LocalForage'</span>)
+AsyncStorage  = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./AsyncStorage'</span>)
+
+backends = [
+  {
+    props   : [<span class="hljs-string">'getItem'</span>, <span class="hljs-string">'setItem'</span>, <span class="hljs-string">'removeItem'</span>, <span class="hljs-string">'clear'</span>, <span class="hljs-string">'keys'</span>, <span class="hljs-string">'length'</span>, <span class="hljs-string">'iterate'</span>]
+    backend : LocalForage
+  }
+  {
+    props   : [<span class="hljs-string">'getItem'</span>, <span class="hljs-string">'setItem'</span>, <span class="hljs-string">'removeItem'</span>, <span class="hljs-string">'clear'</span>, <span class="hljs-string">'getAllKeys'</span>]
+    backend : AsyncStorage
+  }
+  {
+    props   : [<span class="hljs-string">'getItem'</span>, <span class="hljs-string">'setItem'</span>, <span class="hljs-string">'removeItem'</span>, <span class="hljs-string">'clear'</span>, <span class="hljs-string">'key'</span>, <span class="hljs-string">'length'</span>]
+    backend : LocalStorage
+  }
+]
+<span class="hljs-function">
+<span class="hljs-title">create</span> = <span class="hljs-params">(args)</span>-&gt;</span>
+  {backend} = args
+
+  <span class="hljs-keyword">unless</span> backend
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'missing backend arg'</span>)
+
+  <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> backends
+    has_all_props = b.props.every(<span class="hljs-function"><span class="hljs-params">(p)</span>-&gt;</span>
+      (p <span class="hljs-keyword">of</span> backend)
+    )
+
+    <span class="hljs-keyword">if</span> has_all_props
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> b.backend(
+        backend : backend
+      )
+
+  <span class="hljs-keyword">new</span> MemoryStorage(
+    backend : backend
+  )
 
 <span class="hljs-built_in">module</span>.exports = {
-  Memory : MemoryStorage
-  Local  : LocalStorage
+  MemoryStorage : MemoryStorage
+  LocalStorage  : LocalStorage
+  LocalForage   : LocalForage
+  AsyncStorage  : AsyncStorage
+  create        : create
 }</pre></div></div>
             
         </li>

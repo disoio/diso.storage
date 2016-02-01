@@ -20,8 +20,18 @@
             <div id="jump_page">
               
                 
+                <a class="source" href="AsyncStorage.html">
+                  AsyncStorage.coffee
+                </a>
+              
+                
                 <a class="source" href="BaseStorage.html">
                   BaseStorage.coffee
+                </a>
+              
+                
+                <a class="source" href="LocalForage.html">
+                  LocalForage.coffee
                 </a>
               
                 
@@ -82,8 +92,7 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Parent class extended by MemoryStorage and LocalStorage
-that provides expiry and namespacing</p>
+              <p>Parent class that provides expiry, namespacing, util methods</p>
 
             </div>
             
@@ -111,12 +120,17 @@ that provides expiry and namespacing</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p><em>ttl</em>       : global ttl for items this storage
+              <p><em>backend</em>   : backend used by storage engine
+<em>ttl</em>       : global ttl for items this storage
 <em>namespace</em> : starting namespace for this storage</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>  constructor : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    <span class="hljs-keyword">unless</span> (<span class="hljs-string">'backend'</span> <span class="hljs-keyword">of</span> args)
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'Must pass backend to to storage constructor'</span>)
+    <span class="hljs-property">@backend</span> = args.backend
+
     <span class="hljs-property">@ttl</span> = args.ttl
 
     <span class="hljs-keyword">if</span> (<span class="hljs-string">'namespace'</span> <span class="hljs-keyword">of</span> args)
@@ -178,7 +192,10 @@ that provides expiry and namespacing</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  buildKey : <span class="hljs-function"><span class="hljs-params">(args)</span>-&gt;</span>
+            <div class="content"><div class='highlight'><pre>  buildKey : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    <span class="hljs-keyword">unless</span> (<span class="hljs-string">'key'</span> <span class="hljs-keyword">of</span> args)
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'Missing key arg'</span>)
+
     key = args.key
 
     namespace = <span class="hljs-property">@namespace</span> || <span class="hljs-string">''</span>
@@ -199,7 +216,7 @@ that provides expiry and namespacing</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
-              <h2 id="_expires">_expires</h2>
+              <h2 id="wrap">wrap</h2>
 
             </div>
             
@@ -212,18 +229,21 @@ that provides expiry and namespacing</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
-              <p><em>ttl</em> : override global ttl</p>
+              <p><strong>data</strong> : data to wrap
+<em>ttl</em>    : override global ttl</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  _expires : <span class="hljs-function"><span class="hljs-params">(ttl)</span>-&gt;</span>
-    <span class="hljs-keyword">unless</span> (ttl &gt; <span class="hljs-number">0</span>)
-      ttl = <span class="hljs-property">@ttl</span>
+            <div class="content"><div class='highlight'><pre>  wrap : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    <span class="hljs-keyword">unless</span> (<span class="hljs-string">'data'</span> <span class="hljs-keyword">of</span> args)
+      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'Missing data arg'</span>)
 
-    <span class="hljs-keyword">if</span> (ttl &gt; <span class="hljs-number">0</span>)
-      now() + ttl
-    <span class="hljs-keyword">else</span>
-      <span class="hljs-literal">null</span></pre></div></div>
+    {data, ttl} = args
+
+    {
+      data    : data
+      expires : <span class="hljs-property">@_expires</span>(ttl)
+    }</pre></div></div>
             
         </li>
         
@@ -234,7 +254,7 @@ that provides expiry and namespacing</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
-              <h2 id="wrap">wrap</h2>
+              <h2 id="unwrap">unwrap</h2>
 
             </div>
             
@@ -247,18 +267,23 @@ that provides expiry and namespacing</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
-              <p><strong>data</strong> : data to wrap
-<em>ttl</em>    : override global ttl</p>
+              <p><strong>data</strong> : wrapped data
+<strong>key</strong>  : key</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  wrap : <span class="hljs-function"><span class="hljs-params">(args)</span>-&gt;</span>
-    {data, ttl} = args
+            <div class="content"><div class='highlight'><pre>  unwrap : <span class="hljs-function"><span class="hljs-params">(args = {})</span>-&gt;</span>
+    <span class="hljs-keyword">for</span> arg <span class="hljs-keyword">in</span> [<span class="hljs-string">'key'</span>, <span class="hljs-string">'data'</span>]
+      <span class="hljs-keyword">unless</span> (arg <span class="hljs-keyword">of</span> args)
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Error(<span class="hljs-string">"Missing arg: <span class="hljs-subst">#{arg}</span>"</span>)
 
-    {
-      data    : data
-      expires : <span class="hljs-property">@_expires</span>(ttl)
-    }</pre></div></div>
+    {data, key} = args
+    expires = data.expires
+    <span class="hljs-keyword">if</span> (expires <span class="hljs-keyword">and</span> (expires &lt;= now()))
+      <span class="hljs-property">@remove</span>(args)
+      <span class="hljs-literal">null</span>
+    <span class="hljs-keyword">else</span>
+      data.data</pre></div></div>
             
         </li>
         
@@ -269,7 +294,7 @@ that provides expiry and namespacing</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
-              <h2 id="unwrap">unwrap</h2>
+              <h2 id="_expires">_expires</h2>
 
             </div>
             
@@ -282,19 +307,19 @@ that provides expiry and namespacing</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
-              <p><strong>wrapped</strong> : wrapped data
-<strong>key</strong>     : key</p>
+              <p><em>ttl</em> : override global ttl</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  unwrap : <span class="hljs-function"><span class="hljs-params">(args)</span>-&gt;</span>
-    {wrapped, key} = args
-    expires = wrapped.expires
-    <span class="hljs-keyword">if</span> (expires <span class="hljs-keyword">and</span> (expires &lt;= now()))
-      <span class="hljs-property">@remove</span>(args)
-      <span class="hljs-literal">null</span>
+            <div class="content"><div class='highlight'><pre>  _expires : <span class="hljs-function"><span class="hljs-params">(ttl)</span>-&gt;</span>
+    <span class="hljs-keyword">unless</span> (ttl &gt; <span class="hljs-number">0</span>)
+      ttl = <span class="hljs-property">@ttl</span>
+
+    <span class="hljs-keyword">if</span> (ttl &gt; <span class="hljs-number">0</span>)
+      now() + ttl
     <span class="hljs-keyword">else</span>
-      wrapped.data
+      <span class="hljs-literal">null</span>
+
 
 <span class="hljs-built_in">module</span>.exports = BaseStorage</pre></div></div>
             

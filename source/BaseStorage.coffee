@@ -3,14 +3,18 @@ now = ()->
 
 # BaseStorage
 # ===========
-# Parent class extended by MemoryStorage and LocalStorage
-# that provides expiry and namespacing
+# Parent class that provides expiry, namespacing, util methods
 class BaseStorage
   # constructor
   # -----------
+  # *backend*   : backend used by storage engine
   # *ttl*       : global ttl for items this storage
   # *namespace* : starting namespace for this storage
   constructor : (args = {})->
+    unless ('backend' of args)
+      throw new Error('Must pass backend to to storage constructor')
+    @backend = args.backend
+
     @ttl = args.ttl
 
     if ('namespace' of args)
@@ -28,7 +32,10 @@ class BaseStorage
   # --------
   # **key**     : suffix key to build off
   # *namespace* : key namespace
-  buildKey : (args)->
+  buildKey : (args = {})->
+    unless ('key' of args)
+      throw new Error('Missing key arg')
+
     key = args.key
 
     namespace = @namespace || ''
@@ -39,6 +46,40 @@ class BaseStorage
       namespace = namespace + ':'
 
     "#{namespace}#{key}"
+
+
+  # wrap
+  # ----
+  # **data** : data to wrap
+  # *ttl*    : override global ttl
+  wrap : (args = {})->
+    unless ('data' of args)
+      throw new Error('Missing data arg')
+
+    {data, ttl} = args
+
+    {
+      data    : data
+      expires : @_expires(ttl)
+    }
+
+
+  # unwrap
+  # ------
+  # **data** : wrapped data
+  # **key**  : key
+  unwrap : (args = {})->
+    for arg in ['key', 'data']
+      unless (arg of args)
+        throw new Error("Missing arg: #{arg}")
+
+    {data, key} = args
+    expires = data.expires
+    if (expires and (expires <= now()))
+      @remove(args)
+      null
+    else
+      data.data
 
 
   # _expires
@@ -53,31 +94,5 @@ class BaseStorage
     else
       null
 
-
-  # wrap
-  # ----
-  # **data** : data to wrap
-  # *ttl*    : override global ttl
-  wrap : (args)->
-    {data, ttl} = args
-
-    {
-      data    : data
-      expires : @_expires(ttl)
-    }
-
-
-  # unwrap
-  # ------
-  # **wrapped** : wrapped data
-  # **key**     : key
-  unwrap : (args)->
-    {wrapped, key} = args
-    expires = wrapped.expires
-    if (expires and (expires <= now()))
-      @remove(args)
-      null
-    else
-      wrapped.data
 
 module.exports = BaseStorage
